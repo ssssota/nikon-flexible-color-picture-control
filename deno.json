@@ -1,0 +1,5 @@
+{
+  "name": "@ssssota/flexible-color-picture-control",
+  "version": "0.1.0",
+  "exports": "./mod.ts"
+}
