@@ -16,13 +16,13 @@ deno add @ssssota/flexible-color-picture-control
 
 ## Supported features
 
-- [ ] Advanced Settings
+- [x] Advanced Settings
   - [x] Sharpening
   - [x] Mid-range sharpening
   - [x] Clarity
   - [ ] Custom Tone Curve
     - [x] Deserialize
-    - [ ] Serialize
+    - [x] Serialize
   - [x] Contrast
   - [x] Highlights
   - [x] Shadows
