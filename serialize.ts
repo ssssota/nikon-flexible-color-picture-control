@@ -1,10 +1,11 @@
-import { base } from "./base.ts";
+import { base, baseWithToneCurve } from "./base.ts";
 import type {
   ColorBlender,
   ColorBlenderValues,
   ColorGrading,
   ColorGradingValues,
   FlexibleColorPictureControlOptions,
+  ToneCurve,
 } from "./types.ts";
 
 /**
@@ -35,8 +36,9 @@ export function serialize({
   saturation,
   colorBlender,
   colorGrading,
+  toneCurve,
 }: FlexibleColorPictureControlOptions): Uint8Array {
-  const ret = new Uint8Array(base);
+  const ret = new Uint8Array(toneCurve ? baseWithToneCurve : base);
   writeName(ret, name);
   writeSharpning(ret, sharpning);
   writeMidRangeSharpning(ret, midRangeSharpning);
@@ -49,6 +51,7 @@ export function serialize({
   writeSaturation(ret, saturation);
   writeColorBlender(ret, colorBlender);
   writeColorGrading(ret, colorGrading);
+  if (toneCurve) writeToneCurve(ret, toneCurve);
   return ret;
 }
 
@@ -144,6 +147,36 @@ function writeColorGradingValues(
   buf[offset + 1] = normHue & 0xff;
   buf[offset + 2] = 0x80 + clamp(chroma, -100, 100);
   buf[offset + 3] = 0x80 + clamp(brightness, -100, 100);
+}
+
+export function writeToneCurve(
+  buf: Uint8Array,
+  toneCurve: ToneCurve = { raw: [], points: [] },
+) {
+  writeToneCurveRaw(buf, toneCurve.raw);
+  writeToneCurvePoints(buf, toneCurve.points);
+}
+function writeToneCurveRaw(buf: Uint8Array, raw: number[]) {
+  const view = new DataView(buf.buffer);
+  for (let i = 0; i < raw.length; i++) {
+    const value = clamp(raw[i] ?? 0, 0, 32767);
+    view.setUint16(0x1cc + i * 2, value, false);
+  }
+}
+function writeToneCurvePoints(
+  buf: Uint8Array,
+  points: { x: number; y: number }[],
+) {
+  const pointsOffset = 0x194;
+  const maxPoints = 20; // Maximum number of points
+  const pointCount = Math.min(points.length, maxPoints);
+  buf[pointsOffset] = pointCount;
+  for (let i = 0; i < pointCount; i++) {
+    const point = points[i];
+    const offset = pointsOffset + 1 + i * 2;
+    buf[offset] = clamp(point.x, 0, 255);
+    buf[offset + 1] = clamp(point.y, 0, 255);
+  }
 }
 
 function clamp(value: number, min: number, max: number) {
