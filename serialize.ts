@@ -1,4 +1,31 @@
 import { base, baseWithToneCurve } from "./base.ts";
+import {
+  OFFSET_BLACK_LEVEL,
+  OFFSET_CLARITY,
+  OFFSET_COLOR_BLENDER_BLUE,
+  OFFSET_COLOR_BLENDER_CYAN,
+  OFFSET_COLOR_BLENDER_GREEN,
+  OFFSET_COLOR_BLENDER_MAGENTA,
+  OFFSET_COLOR_BLENDER_ORANGE,
+  OFFSET_COLOR_BLENDER_PURPLE,
+  OFFSET_COLOR_BLENDER_RED,
+  OFFSET_COLOR_BLENDER_YELLOW,
+  OFFSET_COLOR_GRADING_BALANCE,
+  OFFSET_COLOR_GRADING_BLENDING,
+  OFFSET_COLOR_GRADING_HIGHLIGHTS,
+  OFFSET_COLOR_GRADING_MIDTONE,
+  OFFSET_COLOR_GRADING_SHADOWS,
+  OFFSET_CONTRAST,
+  OFFSET_HIGHLIGHTS,
+  OFFSET_MID_RANGE_SHARPENING,
+  OFFSET_NAME,
+  OFFSET_SATURATION,
+  OFFSET_SHADOWS,
+  OFFSET_SHARPENING,
+  OFFSET_TONE_CURVE_POINTS,
+  OFFSET_TONE_CURVE_RAW,
+  OFFSET_WHITE_LEVEL,
+} from "./offset.ts";
 import type {
   ColorBlender,
   ColorBlenderValues,
@@ -61,58 +88,74 @@ export function writeName(buf: Uint8Array, name: string) {
     throw new Error("name must be less than 19 characters");
   }
   for (let i = 0; i < name.length; i++) {
-    buf[0x18 + i] = name.charCodeAt(i);
+    buf[OFFSET_NAME + i] = name.charCodeAt(i);
   }
 }
 /** Set the sharpning of the picture control */
 export function writeSharpning(buf: Uint8Array, sharpning = 2) {
-  buf[0x52] = 0x80 + clamp(sharpning, -3, 9) * 4;
+  buf[OFFSET_SHARPENING] = 0x80 + clamp(sharpning, -3, 9) * 4;
 }
 /** Set the mid-range sharpning of the picture control */
 export function writeMidRangeSharpning(buf: Uint8Array, midRangeSharpning = 1) {
-  buf[0xf2] = 0x80 + clamp(midRangeSharpning, -5, 5) * 4;
+  buf[OFFSET_MID_RANGE_SHARPENING] = 0x80 + clamp(midRangeSharpning, -5, 5) * 4;
 }
 /** Set the clarity of the picture control */
 export function writeClarity(buf: Uint8Array, clarity = 0.5) {
-  buf[0x5c] = 0x80 + clamp(clarity, -5, 5) * 4;
+  buf[OFFSET_CLARITY] = 0x80 + clamp(clarity, -5, 5) * 4;
 }
 /** Set the contrast of the picture control */
 export function writeContrast(buf: Uint8Array, contrast = 0) {
-  buf[0x110] = 0x80 + clamp(contrast, -100, 100);
+  buf[OFFSET_CONTRAST] = 0x80 + clamp(contrast, -100, 100);
 }
 /** Set the highlights of the picture control */
 export function writeHighlights(buf: Uint8Array, highlights = 0) {
-  buf[0x11a] = 0x80 + clamp(highlights, -100, 100);
+  buf[OFFSET_HIGHLIGHTS] = 0x80 + clamp(highlights, -100, 100);
 }
 /** Set the shadows of the picture control */
 export function writeShadows(buf: Uint8Array, shadows = 0) {
-  buf[0x124] = 0x80 + clamp(shadows, -100, 100);
+  buf[OFFSET_SHADOWS] = 0x80 + clamp(shadows, -100, 100);
 }
 /** Set the white level of the picture control */
 export function writeWhiteLevel(buf: Uint8Array, whiteLevel = 0) {
-  buf[0x12e] = 0x80 + clamp(whiteLevel, -100, 100);
+  buf[OFFSET_WHITE_LEVEL] = 0x80 + clamp(whiteLevel, -100, 100);
 }
 /** Set the black level of the picture control */
 export function writeBlackLevel(buf: Uint8Array, blackLevel = 0) {
-  buf[0x138] = 0x80 + clamp(blackLevel, -100, 100);
+  buf[OFFSET_BLACK_LEVEL] = 0x80 + clamp(blackLevel, -100, 100);
 }
 /** Set the saturation of the picture control */
 export function writeSaturation(buf: Uint8Array, saturation = 0) {
-  buf[0x142] = 0x80 + clamp(saturation, -100, 100);
+  buf[OFFSET_SATURATION] = 0x80 + clamp(saturation, -100, 100);
 }
 /** Set the color blender of the picture control */
 export function writeColorBlender(
   buf: Uint8Array,
   colorBlender: ColorBlender = {},
 ) {
-  writeColorBlenderValues(buf, 0x14c, colorBlender.red);
-  writeColorBlenderValues(buf, 0x14f, colorBlender.orange);
-  writeColorBlenderValues(buf, 0x152, colorBlender.yellow);
-  writeColorBlenderValues(buf, 0x155, colorBlender.green);
-  writeColorBlenderValues(buf, 0x158, colorBlender.cyan);
-  writeColorBlenderValues(buf, 0x15b, colorBlender.blue);
-  writeColorBlenderValues(buf, 0x15e, colorBlender.purple);
-  writeColorBlenderValues(buf, 0x161, colorBlender.magenta);
+  writeColorBlenderValues(buf, OFFSET_COLOR_BLENDER_RED, colorBlender.red);
+  writeColorBlenderValues(
+    buf,
+    OFFSET_COLOR_BLENDER_ORANGE,
+    colorBlender.orange,
+  );
+  writeColorBlenderValues(
+    buf,
+    OFFSET_COLOR_BLENDER_YELLOW,
+    colorBlender.yellow,
+  );
+  writeColorBlenderValues(buf, OFFSET_COLOR_BLENDER_GREEN, colorBlender.green);
+  writeColorBlenderValues(buf, OFFSET_COLOR_BLENDER_CYAN, colorBlender.cyan);
+  writeColorBlenderValues(buf, OFFSET_COLOR_BLENDER_BLUE, colorBlender.blue);
+  writeColorBlenderValues(
+    buf,
+    OFFSET_COLOR_BLENDER_PURPLE,
+    colorBlender.purple,
+  );
+  writeColorBlenderValues(
+    buf,
+    OFFSET_COLOR_BLENDER_MAGENTA,
+    colorBlender.magenta,
+  );
 }
 function writeColorBlenderValues(
   buf: Uint8Array,
@@ -129,12 +172,24 @@ export function writeColorGrading(
   buf: Uint8Array,
   colorGrading: ColorGrading = {},
 ) {
-  writeColorGradingValues(buf, 0x170, colorGrading.highlights);
-  writeColorGradingValues(buf, 0x174, colorGrading.midTone);
-  writeColorGradingValues(buf, 0x178, colorGrading.shadows);
+  writeColorGradingValues(
+    buf,
+    OFFSET_COLOR_GRADING_HIGHLIGHTS,
+    colorGrading.highlights,
+  );
+  writeColorGradingValues(
+    buf,
+    OFFSET_COLOR_GRADING_MIDTONE,
+    colorGrading.midTone,
+  );
+  writeColorGradingValues(
+    buf,
+    OFFSET_COLOR_GRADING_SHADOWS,
+    colorGrading.shadows,
+  );
   const { blending = 50, balance = 0 } = colorGrading;
-  buf[0x180] = 0x80 + clamp(blending, -100, 100);
-  buf[0x182] = 0x80 + clamp(balance, -100, 100);
+  buf[OFFSET_COLOR_GRADING_BLENDING] = 0x80 + clamp(blending, -100, 100);
+  buf[OFFSET_COLOR_GRADING_BALANCE] = 0x80 + clamp(balance, -100, 100);
 }
 function writeColorGradingValues(
   buf: Uint8Array,
@@ -160,20 +215,19 @@ function writeToneCurveRaw(buf: Uint8Array, raw: number[]) {
   const view = new DataView(buf.buffer);
   for (let i = 0; i < raw.length; i++) {
     const value = clamp(raw[i] ?? 0, 0, 32767);
-    view.setUint16(0x1cc + i * 2, value, false);
+    view.setUint16(OFFSET_TONE_CURVE_RAW + i * 2, value, false);
   }
 }
 function writeToneCurvePoints(
   buf: Uint8Array,
   points: { x: number; y: number }[],
 ) {
-  const pointsOffset = 0x194;
   const maxPoints = 20; // Maximum number of points
   const pointCount = Math.min(points.length, maxPoints);
-  buf[pointsOffset] = pointCount;
+  buf[OFFSET_TONE_CURVE_POINTS] = pointCount;
   for (let i = 0; i < pointCount; i++) {
     const point = points[i];
-    const offset = pointsOffset + 1 + i * 2;
+    const offset = OFFSET_TONE_CURVE_POINTS + 1 + i * 2;
     buf[offset] = clamp(point.x, 0, 255);
     buf[offset + 1] = clamp(point.y, 0, 255);
   }
