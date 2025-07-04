@@ -1,3 +1,30 @@
+import {
+  OFFSET_BLACK_LEVEL,
+  OFFSET_CLARITY,
+  OFFSET_COLOR_BLENDER_BLUE,
+  OFFSET_COLOR_BLENDER_CYAN,
+  OFFSET_COLOR_BLENDER_GREEN,
+  OFFSET_COLOR_BLENDER_MAGENTA,
+  OFFSET_COLOR_BLENDER_ORANGE,
+  OFFSET_COLOR_BLENDER_PURPLE,
+  OFFSET_COLOR_BLENDER_RED,
+  OFFSET_COLOR_BLENDER_YELLOW,
+  OFFSET_COLOR_GRADING_BALANCE,
+  OFFSET_COLOR_GRADING_BLENDING,
+  OFFSET_COLOR_GRADING_HIGHLIGHTS,
+  OFFSET_COLOR_GRADING_MIDTONE,
+  OFFSET_COLOR_GRADING_SHADOWS,
+  OFFSET_CONTRAST,
+  OFFSET_HIGHLIGHTS,
+  OFFSET_MID_RANGE_SHARPENING,
+  OFFSET_NAME,
+  OFFSET_SATURATION,
+  OFFSET_SHADOWS,
+  OFFSET_SHARPENING,
+  OFFSET_TONE_CURVE_POINTS,
+  OFFSET_TONE_CURVE_RAW,
+  OFFSET_WHITE_LEVEL,
+} from "./offset.ts";
 import type {
   ColorBlender,
   ColorBlenderValues,
@@ -46,55 +73,56 @@ export function deserialize(
 
 /** Get the name of the picture control */
 export function readName(buf: Uint8Array): string {
-  return String.fromCharCode(...buf.slice(0x18, 0x18 + 19)).split("\0", 1)[0];
+  const str = String.fromCharCode(...buf.slice(OFFSET_NAME, OFFSET_NAME + 19));
+  return str.split("\0", 1)[0];
 }
 /** Get the sharpning of the picture control */
 export function readSharpning(buf: Uint8Array): number {
-  return (buf[0x52] - 0x80) / 4;
+  return (buf[OFFSET_SHARPENING] - 0x80) / 4;
 }
 /** Get the mid-range sharpning of the picture control */
 export function readMidRangeSharpning(buf: Uint8Array): number {
-  return (buf[0xf2] - 0x80) / 4;
+  return (buf[OFFSET_MID_RANGE_SHARPENING] - 0x80) / 4;
 }
 /** Get the clarity of the picture control */
 export function readClarity(buf: Uint8Array): number {
-  return (buf[0x5c] - 0x80) / 4;
+  return (buf[OFFSET_CLARITY] - 0x80) / 4;
 }
 /** Get the contrast of the picture control */
 export function readContrast(buf: Uint8Array): number {
-  return buf[0x110] - 0x80;
+  return buf[OFFSET_CONTRAST] - 0x80;
 }
 /** Get the highlights of the picture control */
 export function readHighlights(buf: Uint8Array): number {
-  return buf[0x11a] - 0x80;
+  return buf[OFFSET_HIGHLIGHTS] - 0x80;
 }
 /** Get the shadows of the picture control */
 export function readShadows(buf: Uint8Array): number {
-  return buf[0x124] - 0x80;
+  return buf[OFFSET_SHADOWS] - 0x80;
 }
 /** Get the white level of the picture control */
 export function readWhiteLevel(buf: Uint8Array): number {
-  return buf[0x12e] - 0x80;
+  return buf[OFFSET_WHITE_LEVEL] - 0x80;
 }
 /** Get the black level of the picture control */
 export function readBlackLevel(buf: Uint8Array): number {
-  return buf[0x138] - 0x80;
+  return buf[OFFSET_BLACK_LEVEL] - 0x80;
 }
 /** Get the saturation of the picture control */
 export function readSaturation(buf: Uint8Array): number {
-  return buf[0x142] - 0x80;
+  return buf[OFFSET_SATURATION] - 0x80;
 }
 /** Get the color blender of the picture control */
 export function readColorBlender(buf: Uint8Array): ColorBlender {
   return {
-    red: readColorBlenderValues(buf, 0x14c),
-    orange: readColorBlenderValues(buf, 0x14f),
-    yellow: readColorBlenderValues(buf, 0x152),
-    green: readColorBlenderValues(buf, 0x155),
-    cyan: readColorBlenderValues(buf, 0x158),
-    blue: readColorBlenderValues(buf, 0x15b),
-    purple: readColorBlenderValues(buf, 0x15e),
-    magenta: readColorBlenderValues(buf, 0x161),
+    red: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_RED),
+    orange: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_ORANGE),
+    yellow: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_YELLOW),
+    green: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_GREEN),
+    cyan: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_CYAN),
+    blue: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_BLUE),
+    purple: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_PURPLE),
+    magenta: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_MAGENTA),
   };
 }
 function readColorBlenderValues(
@@ -110,11 +138,11 @@ function readColorBlenderValues(
 /** Get the color grading of the picture control */
 export function readColorGrading(buf: Uint8Array): ColorGrading {
   return {
-    highlights: readColorGradingValues(buf, 0x170),
-    midTone: readColorGradingValues(buf, 0x174),
-    shadows: readColorGradingValues(buf, 0x178),
-    blending: buf[0x180] - 0x80,
-    balance: buf[0x182] - 0x80,
+    highlights: readColorGradingValues(buf, OFFSET_COLOR_GRADING_HIGHLIGHTS),
+    midTone: readColorGradingValues(buf, OFFSET_COLOR_GRADING_MIDTONE),
+    shadows: readColorGradingValues(buf, OFFSET_COLOR_GRADING_SHADOWS),
+    blending: buf[OFFSET_COLOR_GRADING_BLENDING] - 0x80,
+    balance: buf[OFFSET_COLOR_GRADING_BALANCE] - 0x80,
   };
 }
 function readColorGradingValues(
@@ -136,17 +164,15 @@ export function readToneCurve(buf: Uint8Array): ToneCurve | undefined {
   };
 }
 function readToneCurveRaw(buf: Uint8Array): number[] {
-  if (buf.byteLength < 0x3cd) return [];
-  return Array.from(readAsBigEndianU16(buf.slice(0x1cc, 0x3ce)));
+  const u16arr = readAsBigEndianU16(buf.slice(OFFSET_TONE_CURVE_RAW, 0x3ce));
+  return Array.from(u16arr);
 }
 function readToneCurvePoints(buf: Uint8Array): ToneCurve["points"] {
-  if (buf.byteLength < 0x3cd) return [];
-  const pointsOffset = 0x194;
-  const pointCount = buf[pointsOffset];
+  const pointCount = buf[OFFSET_TONE_CURVE_POINTS];
   if (pointCount === 0) return [];
   const points: ToneCurve["points"] = [];
   for (let i = 0; i < pointCount; i++) {
-    const offset = pointsOffset + 1 + i * 2;
+    const offset = OFFSET_TONE_CURVE_POINTS + 1 + i * 2;
     points.push({ x: buf[offset], y: buf[offset + 1] });
   }
   return points;
