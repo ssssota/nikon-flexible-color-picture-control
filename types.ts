@@ -33,6 +33,16 @@ export type ColorGrading = {
   /** -100~100 */
   balance?: number;
 };
+export type ToneCurve = {
+  /** 0 ~ 32767 (length:257) */
+  raw: number[];
+  points: {
+    /** 0 ~ 255 */
+    x: number;
+    /** 0 ~ 255 */
+    y: number;
+  }[];
+};
 export type FlexibleColorPictureControlOptions = {
   /** 1~19 alphanumeric characters */
   name: string;
@@ -57,4 +67,6 @@ export type FlexibleColorPictureControlOptions = {
 
   colorBlender?: ColorBlender;
   colorGrading?: ColorGrading;
+
+  toneCurve?: ToneCurve;
 };

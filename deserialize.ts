@@ -4,11 +4,15 @@ import type {
   ColorGrading,
   ColorGradingValues,
   FlexibleColorPictureControlOptions,
+  ToneCurve,
 } from "./types.ts";
 
 type DeepRequired<T> = {
   [P in keyof T]-?: T[P] extends object ? DeepRequired<T[P]> : T[P];
 };
+type OmitDeepRequired<T, K extends keyof T> =
+  & DeepRequired<Omit<T, K>>
+  & Pick<T, K>;
 
 /**
  * Parse "flexible color picture control" binary
@@ -23,7 +27,7 @@ type DeepRequired<T> = {
  */
 export function deserialize(
   buf: Uint8Array,
-): DeepRequired<FlexibleColorPictureControlOptions> {
+): OmitDeepRequired<FlexibleColorPictureControlOptions, "toneCurve"> {
   return {
     name: readName(buf),
     sharpning: readSharpning(buf),
@@ -122,4 +126,38 @@ function readColorGradingValues(
     chroma: buf[offset + 2] - 0x80,
     brightness: buf[offset + 3] - 0x80,
   };
+}
+/** Get the tone curve of the picture control */
+export function readToneCurve(buf: Uint8Array): ToneCurve | undefined {
+  if (buf.byteLength < 0x3cd) return undefined;
+  return {
+    raw: readToneCurveRaw(buf),
+    points: readToneCurvePoints(buf),
+  };
+}
+function readToneCurveRaw(buf: Uint8Array): number[] {
+  if (buf.byteLength < 0x3cd) return [];
+  return Array.from(readAsBigEndianU16(buf.slice(0x1cc, 0x3ce)));
+}
+function readToneCurvePoints(buf: Uint8Array): ToneCurve["points"] {
+  if (buf.byteLength < 0x3cd) return [];
+  const pointsOffset = 0x194;
+  const pointCount = buf[pointsOffset];
+  if (pointCount === 0) return [];
+  const points: ToneCurve["points"] = [];
+  for (let i = 0; i < pointCount; i++) {
+    const offset = pointsOffset + 1 + i * 2;
+    points.push({ x: buf[offset], y: buf[offset + 1] });
+  }
+  return points;
+}
+function readAsBigEndianU16(
+  buf: Uint8Array,
+): Uint16Array {
+  const view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
+  const u16arr = new Uint16Array(buf.byteLength / 2);
+  for (let i = 0; i < u16arr.length; i++) {
+    u16arr[i] = view.getUint16(i * 2, false); // false for big-endian
+  }
+  return u16arr;
 }

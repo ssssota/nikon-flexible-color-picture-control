@@ -20,7 +20,9 @@ deno add @ssssota/flexible-color-picture-control
   - [x] Sharpening
   - [x] Mid-range sharpening
   - [x] Clarity
-  - [ ] Custrom Tone Curve
+  - [ ] Custom Tone Curve
+    - [x] Deserialize
+    - [ ] Serialize
   - [x] Contrast
   - [x] Highlights
   - [x] Shadows
