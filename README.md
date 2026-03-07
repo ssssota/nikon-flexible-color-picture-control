@@ -14,13 +14,34 @@ npx jsr add @ssssota/flexible-color-picture-control
 deno add @ssssota/flexible-color-picture-control
 ```
 
+## Usage
+
+```ts
+import { deserialize, serialize } from "@ssssota/flexible-color-picture-control";
+
+const buf = serialize({
+  name: "sample",
+  contrast: 20,
+  toneCurve: {
+    raw: Array.from({ length: 257 }, (_, i) => i / 256 * 32767),
+    points: [{ x: 0, y: 0 }, { x: 255, y: 255 }],
+  },
+});
+
+const pictureControl = deserialize(buf);
+console.log(pictureControl.toneCurve?.points);
+```
+
+- `serialize()` accepts `toneCurve`.
+- `deserialize()` returns `toneCurve` when the NP3 contains tone curve data.
+
 ## Supported features
 
 - [x] Advanced Settings
   - [x] Sharpening
   - [x] Mid-range sharpening
   - [x] Clarity
-  - [ ] Custom Tone Curve
+  - [x] Custom Tone Curve
     - [x] Deserialize
     - [x] Serialize
   - [x] Contrast

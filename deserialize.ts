@@ -37,7 +37,7 @@ import type {
 type DeepRequired<T> = {
   [P in keyof T]-?: T[P] extends object ? DeepRequired<T[P]> : T[P];
 };
-type OmitDeepRequired<T, K extends keyof T> =
+type DeepRequiredExcept<T, K extends keyof T> =
   & DeepRequired<Omit<T, K>>
   & Pick<T, K>;
 
@@ -54,7 +54,7 @@ type OmitDeepRequired<T, K extends keyof T> =
  */
 export function deserialize(
   buf: Uint8Array,
-): OmitDeepRequired<FlexibleColorPictureControlOptions, "toneCurve"> {
+): DeepRequiredExcept<FlexibleColorPictureControlOptions, "toneCurve"> {
   return {
     name: readName(buf),
     sharpning: readSharpning(buf),
@@ -68,6 +68,7 @@ export function deserialize(
     saturation: readSaturation(buf),
     colorBlender: readColorBlender(buf),
     colorGrading: readColorGrading(buf),
+    toneCurve: readToneCurve(buf),
   };
 }
 
