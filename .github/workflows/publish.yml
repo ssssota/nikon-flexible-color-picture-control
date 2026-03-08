@@ -1,8 +1,8 @@
 name: Publish
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 jobs:
   publish:
@@ -15,5 +15,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Publish package
-        run: npx jsr publish
+      - name: Publish package (jsr)
+        run: pnpm jsr-publish
+
+      - name: Publish package (npm)
+        run: pnpm publish
