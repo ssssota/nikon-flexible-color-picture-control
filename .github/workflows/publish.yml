@@ -20,4 +20,4 @@ jobs:
         run: pnpm jsr-publish
 
       - name: Publish package (npm)
-        run: pnpm publish
+        run: pnpm publish --no-git-checks

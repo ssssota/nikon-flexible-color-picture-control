@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 
 const template = {
-  name: "@ssssota/nikon-flexible-color-picture-control",
+  name: "@ssssota/flexible-color-picture-control",
   version: "0.0.0",
   exports: {
     ".": "./src/mod.ts",
@@ -15,6 +15,8 @@ const template = {
 const version = process.env.npm_package_version;
 if (version) {
   template.version = version;
+} else {
+  process.exit(1);
 }
 
 writeFileSync("jsr.json", JSON.stringify(template, null, 2));
