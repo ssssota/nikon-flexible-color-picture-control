@@ -1,6 +1,0 @@
-{
-  "name": "@ssssota/flexible-color-picture-control",
-  "version": "0.2.0",
-  "exports": "./mod.ts",
-  "license": "MIT"
-}

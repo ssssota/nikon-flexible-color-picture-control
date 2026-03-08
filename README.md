@@ -1,39 +1,36 @@
 # Nikon flexible color picture control reader/writer
 
 This is a simple library to read and write
-[Nikon flexible color picture control](https://www.nikon-image.com/sp/fcpc/)
-(NP3) file. It is written in TypeScript with no dependencies, and published at
-jsr.
+[Nikon flexible color picture control](https://nikonimglib.com/nxstdo/onlinehelp/en/the_picture_controls_flexible_color_23.html)
+(NP3) file. It is written in TypeScript with no dependencies.
 
 ## Installation
 
 ```sh
-# npm
-npx jsr add @ssssota/flexible-color-picture-control
-# deno
-deno add @ssssota/flexible-color-picture-control
+npm i nikon-flexible-color-picture-control
 ```
 
 ## Usage
 
 ```ts
-import { deserialize, serialize } from "@ssssota/flexible-color-picture-control";
+import { deserialize, serialize } from "nikon-flexible-color-picture-control";
 
 const buf = serialize({
   name: "sample",
+  comment: "sample",
   contrast: 20,
   toneCurve: {
-    raw: Array.from({ length: 257 }, (_, i) => i / 256 * 32767),
-    points: [{ x: 0, y: 0 }, { x: 255, y: 255 }],
+    raw: Array.from({ length: 257 }, (_, i) => (i / 256) * 32767),
+    points: [
+      { x: 0, y: 0 },
+      { x: 255, y: 255 },
+    ],
   },
 });
 
 const pictureControl = deserialize(buf);
-console.log(pictureControl.toneCurve?.points);
+console.log(pictureControl.contrast);
 ```
-
-- `serialize()` accepts `toneCurve`.
-- `deserialize()` returns `toneCurve` when the NP3 contains tone curve data.
 
 ## Supported features
 
@@ -60,4 +57,8 @@ console.log(pictureControl.toneCurve?.points);
   - [x] Brightness
   - [x] Blending
   - [x] Balance
-- [ ] Comments
+- [x] Comments (UTF-8, up to 256 characters)
+
+## License
+
+MIT

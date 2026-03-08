@@ -25,6 +25,9 @@ export const OFFSET_COLOR_GRADING_MIDTONE = 0x174;
 export const OFFSET_COLOR_GRADING_SHADOWS = 0x178;
 export const OFFSET_COLOR_GRADING_BLENDING = 0x180;
 export const OFFSET_COLOR_GRADING_BALANCE = 0x182;
+export const OFFSET_COMMENT_FLAG_A = 0x185;
+export const OFFSET_COMMENT_FLAG_B = 0x186;
+export const OFFSET_TONE_CURVE_FLAG = 0x187;
 
 // Tone curve offsets
 export const OFFSET_TONE_CURVE_RAW = 0x1cc;

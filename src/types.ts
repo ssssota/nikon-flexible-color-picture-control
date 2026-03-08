@@ -35,17 +35,48 @@ export type ColorGrading = {
 };
 export type ToneCurve = {
   /** 0 ~ 32767 (length:257) */
-  raw: number[];
-  points: {
+  raw: readonly number[];
+  points: readonly {
     /** 0 ~ 255 */
     x: number;
     /** 0 ~ 255 */
     y: number;
   }[];
 };
+export type FlexibleColorPictureControl = {
+  /** 1~19 alphanumeric characters */
+  name: string;
+  /** Optional UTF-8 comment (up to 256 characters) */
+  comment?: string;
+  /** -3.0~9.0 */
+  sharpning: number;
+  /** -5.0~5.0 */
+  midRangeSharpning: number;
+  /** -5.0~5.0 */
+  clarity: number;
+  /** -100~100 */
+  contrast: number;
+  /** -100~100 */
+  highlights: number;
+  /** -100~100 */
+  shadows: number;
+  /** -100~100 */
+  whiteLevel: number;
+  /** -100~100 */
+  blackLevel: number;
+  /** -100~100 */
+  saturation: number;
+
+  colorBlender: ColorBlender;
+  colorGrading: ColorGrading;
+
+  toneCurve?: ToneCurve;
+};
 export type FlexibleColorPictureControlOptions = {
   /** 1~19 alphanumeric characters */
   name: string;
+  /** Optional UTF-8 comment (up to 256 characters) */
+  comment?: string;
   /** -3.0~9.0 */
   sharpning?: number;
   /** -5.0~5.0 */

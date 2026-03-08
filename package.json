@@ -1,0 +1,50 @@
+{
+  "name": "nikon-flexible-color-picture-control",
+  "version": "1.0.0",
+  "description": "Library to read and write Nikon flexible color picture control (.NP3) file",
+  "keywords": [
+    "NP3",
+    "Nikon",
+    "flexible color picture control"
+  ],
+  "homepage": "https://github.com/ssssota/nikon-flexible-color-picture-control#readme",
+  "bugs": {
+    "url": "https://github.com/ssssota/nikon-flexible-color-picture-control/issues"
+  },
+  "license": "MIT",
+  "author": "TOMIKAWA Sotaro <tommysouta@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssssota/nikon-flexible-color-picture-control.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "dist/mod.mjs",
+  "types": "dist/mod.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/mod.d.mts",
+      "default": "./dist/mod.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsdown src/mod.ts --dts",
+    "fmt": "oxfmt && oxlint --fix",
+    "lint": "oxfmt --check && oxlint",
+    "test": "node --test",
+    "prepare": "pnpm build",
+    "jsr-publish": "node jsr.ts && jsr publish"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "jsr": "^0.14.3",
+    "oxfmt": "^0.36.0",
+    "oxlint": "^1.51.0",
+    "oxlint-tsgolint": "^0.16.0",
+    "tsdown": "^0.21.0",
+    "typescript": "^5.9.3"
+  },
+  "packageManager": "pnpm@10.31.0+sha512.e3927388bfaa8078ceb79b748ffc1e8274e84d75163e67bc22e06c0d3aed43dd153151cbf11d7f8301ff4acb98c68bdc5cadf6989532801ffafe3b3e4a63c268"
+}

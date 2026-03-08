@@ -1,8 +1,8 @@
 name: Publish
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 jobs:
   publish:
@@ -13,7 +13,11 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
-      - name: Publish package
-        run: npx jsr publish
+      - name: Publish package (jsr)
+        run: pnpm jsr-publish
+
+      - name: Publish package (npm)
+        run: pnpm publish
