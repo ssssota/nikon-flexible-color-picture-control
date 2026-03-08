@@ -1,0 +1,35 @@
+{
+  "name": "nikon-flexible-color-picture-control",
+  "version": "1.0.0",
+  "description": "Library to read and write Nikon flexible color picture control (.NP3) file",
+  "keywords": [
+    "NP3",
+    "Nikon",
+    "flexible color picture control"
+  ],
+  "homepage": "https://github.com/ssssota/nikon-flexible-color-picture-control#readme",
+  "bugs": {
+    "url": "https://github.com/ssssota/nikon-flexible-color-picture-control/issues"
+  },
+  "license": "MIT",
+  "author": "TOMIKAWA Sotaro <tommysouta@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssssota/nikon-flexible-color-picture-control.git"
+  },
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "fmt": "oxfmt && oxlint --fix",
+    "lint": "oxfmt --check && oxlint",
+    "check": "tsgo",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.5",
+    "oxfmt": "^0.36.0",
+    "oxlint": "^1.51.0",
+    "oxlint-tsgolint": "^0.16.0"
+  },
+  "packageManager": "pnpm@10.31.0+sha512.e3927388bfaa8078ceb79b748ffc1e8274e84d75163e67bc22e06c0d3aed43dd153151cbf11d7f8301ff4acb98c68bdc5cadf6989532801ffafe3b3e4a63c268"
+}

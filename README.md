@@ -21,19 +21,20 @@ import { deserialize, serialize } from "@ssssota/flexible-color-picture-control"
 
 const buf = serialize({
   name: "sample",
+  comment: "sample",
   contrast: 20,
   toneCurve: {
-    raw: Array.from({ length: 257 }, (_, i) => i / 256 * 32767),
-    points: [{ x: 0, y: 0 }, { x: 255, y: 255 }],
+    raw: Array.from({ length: 257 }, (_, i) => (i / 256) * 32767),
+    points: [
+      { x: 0, y: 0 },
+      { x: 255, y: 255 },
+    ],
   },
 });
 
 const pictureControl = deserialize(buf);
-console.log(pictureControl.toneCurve?.points);
+console.log(pictureControl.contrast);
 ```
-
-- `serialize()` accepts `toneCurve`.
-- `deserialize()` returns `toneCurve` when the NP3 contains tone curve data.
 
 ## Supported features
 
@@ -60,4 +61,4 @@ console.log(pictureControl.toneCurve?.points);
   - [x] Brightness
   - [x] Blending
   - [x] Balance
-- [ ] Comments
+- [x] Comments (UTF-8, up to 256 characters)
