@@ -13,7 +13,8 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup
 
       - name: Publish package (jsr)
         run: pnpm jsr-publish

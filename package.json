@@ -17,6 +17,9 @@
     "type": "git",
     "url": "git+https://github.com/ssssota/nikon-flexible-color-picture-control.git"
   },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "main": "dist/mod.mjs",
   "types": "dist/mod.d.mts",
@@ -31,6 +34,7 @@
     "fmt": "oxfmt && oxlint --fix",
     "lint": "oxfmt --check && oxlint",
     "test": "node --test",
+    "prepare": "pnpm build",
     "jsr-publish": "node jsr.ts && jsr publish"
   },
   "devDependencies": {
