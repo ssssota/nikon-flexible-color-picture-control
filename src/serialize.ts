@@ -43,7 +43,7 @@ type U8Arr = Uint8Array<ArrayBuffer>;
 const textEncoder = new TextEncoder();
 const BASE_LENGTH = base.length;
 const TONE_CURVE_EXTENSION = baseWithToneCurve.slice(BASE_LENGTH);
-const MAX_COMMENT_CHARACTERS = 256;
+const MAX_COMMENT_CODE_UNITS = 256;
 const TONE_CURVE_SENTINEL_OFFSETS = [
   OFFSET_CONTRAST,
   OFFSET_HIGHLIGHTS,
@@ -104,7 +104,7 @@ export function serialize({
 }
 
 /** Set the name of the picture control */
-export function writeName(buf: Uint8Array, name: string) {
+function writeName(buf: Uint8Array, name: string) {
   if (name.length > 19) {
     throw new Error("name must be less than 19 characters");
   }
@@ -113,43 +113,43 @@ export function writeName(buf: Uint8Array, name: string) {
   }
 }
 /** Set the sharpning of the picture control */
-export function writeSharpning(buf: Uint8Array, sharpning = 2) {
+function writeSharpning(buf: Uint8Array, sharpning = 2) {
   buf[OFFSET_SHARPENING] = 0x80 + clamp(sharpning, -3, 9) * 4;
 }
 /** Set the mid-range sharpning of the picture control */
-export function writeMidRangeSharpning(buf: Uint8Array, midRangeSharpning = 1) {
+function writeMidRangeSharpning(buf: Uint8Array, midRangeSharpning = 1) {
   buf[OFFSET_MID_RANGE_SHARPENING] = 0x80 + clamp(midRangeSharpning, -5, 5) * 4;
 }
 /** Set the clarity of the picture control */
-export function writeClarity(buf: Uint8Array, clarity = 0.5) {
+function writeClarity(buf: Uint8Array, clarity = 0.5) {
   buf[OFFSET_CLARITY] = 0x80 + clamp(clarity, -5, 5) * 4;
 }
 /** Set the contrast of the picture control */
-export function writeContrast(buf: Uint8Array, contrast = 0) {
+function writeContrast(buf: Uint8Array, contrast = 0) {
   buf[OFFSET_CONTRAST] = 0x80 + clamp(contrast, -100, 100);
 }
 /** Set the highlights of the picture control */
-export function writeHighlights(buf: Uint8Array, highlights = 0) {
+function writeHighlights(buf: Uint8Array, highlights = 0) {
   buf[OFFSET_HIGHLIGHTS] = 0x80 + clamp(highlights, -100, 100);
 }
 /** Set the shadows of the picture control */
-export function writeShadows(buf: Uint8Array, shadows = 0) {
+function writeShadows(buf: Uint8Array, shadows = 0) {
   buf[OFFSET_SHADOWS] = 0x80 + clamp(shadows, -100, 100);
 }
 /** Set the white level of the picture control */
-export function writeWhiteLevel(buf: Uint8Array, whiteLevel = 0) {
+function writeWhiteLevel(buf: Uint8Array, whiteLevel = 0) {
   buf[OFFSET_WHITE_LEVEL] = 0x80 + clamp(whiteLevel, -100, 100);
 }
 /** Set the black level of the picture control */
-export function writeBlackLevel(buf: Uint8Array, blackLevel = 0) {
+function writeBlackLevel(buf: Uint8Array, blackLevel = 0) {
   buf[OFFSET_BLACK_LEVEL] = 0x80 + clamp(blackLevel, -100, 100);
 }
 /** Set the saturation of the picture control */
-export function writeSaturation(buf: Uint8Array, saturation = 0) {
+function writeSaturation(buf: Uint8Array, saturation = 0) {
   buf[OFFSET_SATURATION] = 0x80 + clamp(saturation, -100, 100);
 }
 /** Set the color blender of the picture control */
-export function writeColorBlender(buf: Uint8Array, colorBlender: ColorBlender = {}) {
+function writeColorBlender(buf: Uint8Array, colorBlender: ColorBlender = {}) {
   writeColorBlenderValues(buf, OFFSET_COLOR_BLENDER_RED, colorBlender.red);
   writeColorBlenderValues(buf, OFFSET_COLOR_BLENDER_ORANGE, colorBlender.orange);
   writeColorBlenderValues(buf, OFFSET_COLOR_BLENDER_YELLOW, colorBlender.yellow);
@@ -166,7 +166,7 @@ function writeColorBlenderValues(buf: Uint8Array, offset: number, color: ColorBl
   buf[offset + 2] = 0x80 + clamp(brightness, -100, 100);
 }
 /** Set the color grading of the picture control */
-export function writeColorGrading(buf: Uint8Array, colorGrading: ColorGrading = {}) {
+function writeColorGrading(buf: Uint8Array, colorGrading: ColorGrading = {}) {
   writeColorGradingValues(buf, OFFSET_COLOR_GRADING_HIGHLIGHTS, colorGrading.highlights);
   writeColorGradingValues(buf, OFFSET_COLOR_GRADING_MIDTONE, colorGrading.midTone);
   writeColorGradingValues(buf, OFFSET_COLOR_GRADING_SHADOWS, colorGrading.shadows);
@@ -183,7 +183,7 @@ function writeColorGradingValues(buf: Uint8Array, offset: number, color: ColorGr
   buf[offset + 3] = 0x80 + clamp(brightness, -100, 100);
 }
 /** Set the comment of the picture control */
-export function writeComment(buf: U8Arr, comment = "", nextChunkType = 0x00): U8Arr {
+function writeComment(buf: U8Arr, comment = "", nextChunkType = 0x00): U8Arr {
   if (comment.length === 0) return buf;
   const payload = encodeComment(comment);
   const ret = new Uint8Array(buf.byteLength + 4 + payload.byteLength + 4);
@@ -196,7 +196,7 @@ export function writeComment(buf: U8Arr, comment = "", nextChunkType = 0x00): U8
   return ret;
 }
 
-export function writeToneCurve(buf: U8Arr, toneCurve: ToneCurve = { raw: [], points: [] }): U8Arr {
+function writeToneCurve(buf: U8Arr, toneCurve: ToneCurve = { raw: [], points: [] }): U8Arr {
   const toneCurveStart = getToneCurveStart(buf);
   writeToneCurveRaw(buf, toneCurve.raw, toneCurveStart);
   writeToneCurvePoints(buf, toneCurve.points, toneCurveStart);
@@ -269,13 +269,20 @@ function encodeComment(comment: string): U8Arr {
   if (comment.includes("\0")) {
     throw new Error("comment must not contain NUL characters");
   }
-  if (Array.from(comment).length > MAX_COMMENT_CHARACTERS) {
-    throw new Error(`comment must be ${MAX_COMMENT_CHARACTERS} characters or fewer`);
-  }
-  const encoded = textEncoder.encode(comment);
+  const encoded = textEncoder.encode(trimComment(comment));
   const ret = new Uint8Array(alignToEven(encoded.byteLength + 1));
   ret.set(encoded);
   return ret;
+}
+function trimComment(comment: string): string {
+  if (comment.length <= MAX_COMMENT_CODE_UNITS) return comment;
+  let trimmed = comment.slice(0, MAX_COMMENT_CODE_UNITS);
+  const lastCodeUnit = trimmed.charCodeAt(trimmed.length - 1);
+  // Avoid emitting a dangling high surrogate when trimming by UTF-16 code units.
+  if (lastCodeUnit >= 0xd800 && lastCodeUnit <= 0xdbff) {
+    trimmed = trimmed.slice(0, -1);
+  }
+  return trimmed;
 }
 function alignToEven(value: number) {
   return value % 2 === 0 ? value : value + 1;

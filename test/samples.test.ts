@@ -84,9 +84,6 @@ const MAX_POINT_TONE_CURVE: ToneCurve = {
   ],
 };
 
-const LONGEST_COMMENT = "0123456789".repeat(25) + "012345";
-const LONGEST_COMMENT_JP = "あいうえおかきくけこさしすせそたちつてと".repeat(13).slice(0, 256);
-
 const SAMPLE_CASES: readonly SampleCase[] = [
   { fileName: "vanilla.NP3", expected: createExpected("vanilla") },
   { fileName: "comment-a.NP3", expected: createExpected("comment-a", { comment: "a" }) },
@@ -101,11 +98,17 @@ const SAMPLE_CASES: readonly SampleCase[] = [
   },
   {
     fileName: "longest-comment.NP3",
-    expected: createExpected("longest-comment", { comment: LONGEST_COMMENT }),
+    expected: createExpected("longest-comment", { comment: "0123456789".repeat(25) + "012345" }),
+  },
+  {
+    fileName: "longest-comment-emj.NP3",
+    expected: createExpected("longest-comment-emj", { comment: "👨‍👩‍👧‍👦".repeat(23) + "👨‍" }),
   },
   {
     fileName: "longest-comment-jp.NP3",
-    expected: createExpected("longest-comment-jp", { comment: LONGEST_COMMENT_JP }),
+    expected: createExpected("longest-comment-jp", {
+      comment: "あいうえおかきくけこさしすせそたちつてと".repeat(13).slice(0, 256),
+    }),
   },
   {
     fileName: "tonecurve-noop.NP3",
@@ -142,6 +145,30 @@ for (const { fileName, expected } of SAMPLE_CASES) {
     assert.deepStrictEqual(serialize(expected), sample);
   });
 }
+
+void test("serialize trims overlong emoji comments like the official app", () => {
+  const sample = readSample("longest-comment-emj.NP3");
+  const originalComment = "👨‍👩‍👧‍👦".repeat(24);
+  assert.deepStrictEqual(
+    serialize(createExpected("longest-comment-emj", { comment: originalComment })),
+    sample,
+  );
+});
+
+void test("serialize and deserialize clamp overlong comments to the supported length", () => {
+  const pictureControl = deserialize(
+    serialize(
+      createExpected("long-comment-trip", {
+        comment: "あいうえおかきくけこさしすせそたちつてと".repeat(130),
+      }),
+    ),
+  );
+  assert.equal(
+    pictureControl.comment,
+    "あいうえおかきくけこさしすせそたちつてと".repeat(13).slice(0, 256),
+  );
+  assert.equal(pictureControl.comment?.length, 256);
+});
 
 function createExpected(
   name: string,

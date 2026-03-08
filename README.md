@@ -1,23 +1,19 @@
 # Nikon flexible color picture control reader/writer
 
 This is a simple library to read and write
-[Nikon flexible color picture control](https://www.nikon-image.com/sp/fcpc/)
-(NP3) file. It is written in TypeScript with no dependencies, and published at
-jsr.
+[Nikon flexible color picture control](https://nikonimglib.com/nxstdo/onlinehelp/en/the_picture_controls_flexible_color_23.html)
+(NP3) file. It is written in TypeScript with no dependencies.
 
 ## Installation
 
 ```sh
-# npm
-npx jsr add @ssssota/flexible-color-picture-control
-# deno
-deno add @ssssota/flexible-color-picture-control
+npm i nikon-flexible-color-picture-control
 ```
 
 ## Usage
 
 ```ts
-import { deserialize, serialize } from "@ssssota/flexible-color-picture-control";
+import { deserialize, serialize } from "nikon-flexible-color-picture-control";
 
 const buf = serialize({
   name: "sample",
@@ -62,3 +58,7 @@ console.log(pictureControl.contrast);
   - [x] Blending
   - [x] Balance
 - [x] Comments (UTF-8, up to 256 characters)
+
+## License
+
+MIT

@@ -82,53 +82,53 @@ export function deserialize(buf: Uint8Array): FlexibleColorPictureControl {
 }
 
 /** Get the name of the picture control */
-export function readName(buf: Uint8Array): string {
+function readName(buf: Uint8Array): string {
   const str = String.fromCharCode(...buf.slice(OFFSET_NAME, OFFSET_NAME + 19));
   return str.split("\0", 1)[0];
 }
 /** Get the sharpning of the picture control */
-export function readSharpning(buf: Uint8Array): number {
+function readSharpning(buf: Uint8Array): number {
   return (buf[OFFSET_SHARPENING] - 0x80) / 4;
 }
 /** Get the mid-range sharpning of the picture control */
-export function readMidRangeSharpning(buf: Uint8Array): number {
+function readMidRangeSharpning(buf: Uint8Array): number {
   return (buf[OFFSET_MID_RANGE_SHARPENING] - 0x80) / 4;
 }
 /** Get the clarity of the picture control */
-export function readClarity(buf: Uint8Array): number {
+function readClarity(buf: Uint8Array): number {
   return (buf[OFFSET_CLARITY] - 0x80) / 4;
 }
 /** Get the contrast of the picture control */
-export function readContrast(buf: Uint8Array): number {
+function readContrast(buf: Uint8Array): number {
   if (hasToneCurve(buf)) return 0;
   return buf[OFFSET_CONTRAST] - 0x80;
 }
 /** Get the highlights of the picture control */
-export function readHighlights(buf: Uint8Array): number {
+function readHighlights(buf: Uint8Array): number {
   if (hasToneCurve(buf)) return 0;
   return buf[OFFSET_HIGHLIGHTS] - 0x80;
 }
 /** Get the shadows of the picture control */
-export function readShadows(buf: Uint8Array): number {
+function readShadows(buf: Uint8Array): number {
   if (hasToneCurve(buf)) return 0;
   return buf[OFFSET_SHADOWS] - 0x80;
 }
 /** Get the white level of the picture control */
-export function readWhiteLevel(buf: Uint8Array): number {
+function readWhiteLevel(buf: Uint8Array): number {
   if (hasToneCurve(buf)) return 0;
   return buf[OFFSET_WHITE_LEVEL] - 0x80;
 }
 /** Get the black level of the picture control */
-export function readBlackLevel(buf: Uint8Array): number {
+function readBlackLevel(buf: Uint8Array): number {
   if (hasToneCurve(buf)) return 0;
   return buf[OFFSET_BLACK_LEVEL] - 0x80;
 }
 /** Get the saturation of the picture control */
-export function readSaturation(buf: Uint8Array): number {
+function readSaturation(buf: Uint8Array): number {
   return buf[OFFSET_SATURATION] - 0x80;
 }
 /** Get the color blender of the picture control */
-export function readColorBlender(buf: Uint8Array): ColorBlender {
+function readColorBlender(buf: Uint8Array): ColorBlender {
   return {
     red: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_RED),
     orange: readColorBlenderValues(buf, OFFSET_COLOR_BLENDER_ORANGE),
@@ -148,7 +148,7 @@ function readColorBlenderValues(buf: Uint8Array, offset: number): ColorBlenderVa
   };
 }
 /** Get the color grading of the picture control */
-export function readColorGrading(buf: Uint8Array): ColorGrading {
+function readColorGrading(buf: Uint8Array): ColorGrading {
   return {
     highlights: readColorGradingValues(buf, OFFSET_COLOR_GRADING_HIGHLIGHTS),
     midTone: readColorGradingValues(buf, OFFSET_COLOR_GRADING_MIDTONE),
@@ -165,7 +165,7 @@ function readColorGradingValues(buf: Uint8Array, offset: number): ColorGradingVa
   };
 }
 /** Get the comment of the picture control */
-export function readComment(buf: Uint8Array): string | undefined {
+function readComment(buf: Uint8Array): string | undefined {
   const chunk = readCommentChunk(buf);
   if (chunk === undefined) return undefined;
   const payload = buf.slice(COMMENT_PAYLOAD_OFFSET, COMMENT_PAYLOAD_OFFSET + chunk.payloadLength);
@@ -174,7 +174,7 @@ export function readComment(buf: Uint8Array): string | undefined {
   return decodeUtf8String(text);
 }
 /** Get the tone curve of the picture control */
-export function readToneCurve(buf: Uint8Array): ToneCurve | undefined {
+function readToneCurve(buf: Uint8Array): ToneCurve | undefined {
   const toneCurveStart = getToneCurveStart(buf);
   if (toneCurveStart === undefined) return undefined;
   return {
